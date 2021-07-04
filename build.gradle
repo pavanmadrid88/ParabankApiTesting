@@ -1,0 +1,57 @@
+defaultTasks 'clean','test','aggregate'
+version '1.0-SNAPSHOT'
+apply plugin: 'java'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+buildscript {
+    project.ext {
+        serenityVersion = '2.3.12'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath('net.serenity-bdd:serenity-gradle-plugin:' + serenityVersion)
+    }
+}
+
+dependencies {
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
+    implementation group: 'net.serenity-bdd',name:'serenity-rest-assured',version: '2.4.34'
+    implementation group: 'io.cucumber', name: 'cucumber-java', version: '6.10.4'
+    implementation group: 'io.cucumber', name: 'cucumber-junit', version: '6.10.4'
+    implementation group: 'io.cucumber', name: 'cucumber-core', version: '6.10.4'
+    implementation group: 'junit',name: 'junit',version: '4.12'
+    implementation group: 'net.serenity-bdd', name: 'serenity-cucumber6', version: '2.4.24'
+    implementation group: 'net.serenity-bdd', name: 'serenity-gradle-plugin', version: '2.4.24'
+    implementation group: 'io.rest-assured', name: 'rest-assured', version: '4.4.0'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.3'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.3'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.3'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileClasspath group: 'net.serenity-bdd',name: 'serenity-single-page-report',version: '2.1.4'
+
+}
+
+test {
+    testLogging {
+        showStandardStreams(true)
+    }
+    systemProperties System.getProperties()
+}
+
+gradle.startParameter.continueOnFailure = true
+test.finalizedBy(aggregate)
