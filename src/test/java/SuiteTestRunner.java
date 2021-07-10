@@ -19,7 +19,6 @@ import utils.RestDriver;
 public class SuiteTestRunner {
 
     private static Properties properties;
-    private static Properties envProperties;
     private static RestDriver restDriver;
     private static BaseService baseService;
     private static Logger logger = LoggerFactory.getLogger(SuiteTestRunner.class);
