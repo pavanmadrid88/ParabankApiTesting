@@ -25,53 +25,74 @@ public class CreateNewAccountService extends BaseService {
 
     @When("I create an account of type {string} from accountId {string}")
     public void iCreateAnAccountOfType(String accountType, String fromAccountId) {
-        String endpoint = properties.getProperty("createAccountEndpoint");
-        int newAccountTypeId = getAccountType(accountType);
-        HashMap<String, String> queryParams = new HashMap<>();
-        queryParams.put("customerId", String.valueOf(LoginService.loginCustomerId));
-        queryParams.put("newAccountType", String.valueOf(newAccountTypeId));
-        queryParams.put("fromAccountId", fromAccountId);
-        HashMap<String, String> cookies = new HashMap<>();
-        response = restDriver.postRequestWithQueryParamsAndCookies(endpoint, "", queryParams, cookies);
-        logger.info("create account response:" + response.getBody().asPrettyString());
+        try {
+            String endpoint = properties.getProperty("createAccountEndpoint");
+            int newAccountTypeId = getAccountType(accountType);
+            HashMap<String, String> queryParams = new HashMap<>();
+            queryParams.put("customerId", String.valueOf(LoginService.loginCustomerId));
+            queryParams.put("newAccountType", String.valueOf(newAccountTypeId));
+            queryParams.put("fromAccountId", fromAccountId);
+            HashMap<String, String> cookies = new HashMap<>();
+            response = restDriver.postRequestWithQueryParamsAndCookies(endpoint, "", queryParams, cookies);
+            logger.info("create account response:" + response.getBody().asPrettyString());
+        }catch (Exception e){
+            logger.error("Exception while creating an account:" + e.getMessage());
+            Assert.fail("Exception while creating an account:" + e.getMessage());
+        }
     }
 
     @Then("account of type {string} must be created")
     public void accountOfTypeMustBeCreated(String accountType) {
-        TestUtils.validateResponseStatusCode(response, 200);
-        CreateAccountResponsePojo createAccountResponsePojo = response.getBody().as(CreateAccountResponsePojo.class);
-        Assert.assertEquals(accountType.toUpperCase().trim(), createAccountResponsePojo.getType().toUpperCase().trim());
-        Assert.assertNotNull(createAccountResponsePojo.getId());
-        logger.info("New account ID:" + createAccountResponsePojo.getId() + " of type:" + accountType + " created");
-        accountIds.add(createAccountResponsePojo.getId());
+        try {
+            TestUtils.validateResponseStatusCode(response, 200);
+            CreateAccountResponsePojo createAccountResponsePojo = response.getBody().as(CreateAccountResponsePojo.class);
+            Assert.assertEquals(accountType.toUpperCase().trim(), createAccountResponsePojo.getType().toUpperCase().trim());
+            Assert.assertNotNull(createAccountResponsePojo.getId());
+            logger.info("New account ID:" + createAccountResponsePojo.getId() + " of type:" + accountType + " created");
+            accountIds.add(createAccountResponsePojo.getId());
+        }catch (Exception e){
+            logger.error("Exception while validating account creation:" + e.getMessage());
+            Assert.fail("Exception while validating account creation:" + e.getMessage());
+        }
     }
 
     private int getAccountType(String accountType) {
-        int accountTypeid = 0;
-        switch (accountType) {
-            case "CHECKING":
-                accountTypeid = 0;
-                break;
-            case "SAVINGS":
-                accountTypeid = 1;
-                break;
-            case "LOAN":
-                accountTypeid = 2;
-            default:
-                Assert.fail("Invalid account type specified as input");
+        try {
+            int accountTypeid = 0;
+            switch (accountType) {
+                case "CHECKING":
+                    accountTypeid = 0;
+                    break;
+                case "SAVINGS":
+                    accountTypeid = 1;
+                    break;
+                case "LOAN":
+                    accountTypeid = 2;
+                default:
+                    Assert.fail("Invalid account type specified as input");
+            }
+            return accountTypeid;
+        }catch (Exception e){
+            logger.error("Exception while retrieving account type:" + e.getMessage());
+            Assert.fail("Exception while retrieving account type");
+            return 0;
         }
-        return accountTypeid;
     }
 
 
     @When("I create an account of following types")
     public void iCreateAnAccountOfFollowingTypes(DataTable dataTable) {
-        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-        for (int i = 0; i < rows.size(); i++) {
-            String accountType = rows.get(i).get("accountType");
-            String fromAccountId = rows.get(i).get("fromAccountId");
-            iCreateAnAccountOfType(accountType, fromAccountId);
-            accountOfTypeMustBeCreated(accountType);
+        try {
+            List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+            for (int i = 0; i < rows.size(); i++) {
+                String accountType = rows.get(i).get("accountType");
+                String fromAccountId = rows.get(i).get("fromAccountId");
+                iCreateAnAccountOfType(accountType, fromAccountId);
+                accountOfTypeMustBeCreated(accountType);
+            }
+        }catch (Exception e){
+            logger.error("Exception while creating an account:" + e.getMessage());
+            Assert.fail("Exception while creating an account:" + e.getMessage());
         }
 
     }
