@@ -1,7 +1,6 @@
 <h3> Para Bank API tests </h3>
 <p>
 <i><strong>This project contains API tests for ParaBank API services, implemented using Cucumber,Serenity,Rest-Assured and Java</strong></i>
-<i><strong>For API documentation overview,refer <a href="api.md">API overview</a> </strong></i>
 </p>
 
 ### Features
